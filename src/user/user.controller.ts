@@ -3,6 +3,15 @@ import { UserService } from './user.service';
 import { type UpdateUserDto } from './domain/user.dto';
 import { UserEntity } from './domain/user.entity';
 
+/**
+ * Controlador utilizado para lidar com dados relacionados
+ * ao usuário.
+ * ### Observação
+ * > Utilização de 
+ * > `return new UserEntity()`
+ * > para a exclusão do campo de password.
+ */
+
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {

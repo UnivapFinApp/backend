@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { CreateTransactionDto } from './domain/transaction.dto';
+import { PrismaService } from 'src/common/database/prisma/prisma.service';
+import { TransactionRepository } from './domain/transactions.repository';
+import { TransactionEntity } from './domain/entities/transaction.entity';
+import { Prisma } from 'generated/prisma';
+import { UpdateCategoryDto } from 'src/categories/domain/category.dto';
 
 @Injectable()
-export class TransactionsService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+export class TransactionsService implements TransactionRepository {
+  constructor(private readonly service: PrismaService) { }
+
+  async createTransaction(
+    data: CreateTransactionDto
+  ): Promise<TransactionEntity> {
+    return await this.service.transaction.create({ data });
   }
 
-  findAll() {
-    return `This action returns all transactions`;
+  async transactions(transactionWhereUniqueInput: Prisma.TransactionWhereUniqueInput): Promise<TransactionEntity[]> {
+    return await this.service.transaction.findMany({ where: transactionWhereUniqueInput });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  async transaction(transactionWhereInput: Prisma.TransactionWhereInput): Promise<TransactionEntity | null> {
+    return await this.service.transaction.findFirst({ where: transactionWhereInput });
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  async updateTransaction(transactionWhereInput: Prisma.TransactionWhereUniqueInput, data: UpdateCategoryDto) {
+    return await this.service.transaction.update({ where: transactionWhereInput, data })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  removeTransaction(transactionWhereUniqueInput: Prisma.TransactionWhereUniqueInput) {
   }
 }

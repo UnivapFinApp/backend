@@ -1,8 +1,8 @@
 import { Exclude } from "class-transformer";
 
 export class UserEntity {
-    name: string;
     id: string;
+    name: string;
     email: string;
 
     @Exclude()

@@ -2,7 +2,7 @@ import { EncryptionService } from "src/common/encryption/encryption.service";
 import { type UserEntity } from "src/user/domain/user.entity";
 import { Injectable } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { RegisterUserDto } from "./domain/auth.entity";
+import { RegisterUserDto } from "./domain/auth.dto";
 
 @Injectable()
 export class RegisterUserUseCase {

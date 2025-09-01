@@ -2,9 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EncryptionService } from 'src/common/encryption/encryption.service';
 import { AuthRepository } from './domain/auth.repository';
 import { UserService } from 'src/user/user.service';
-import { LoginResponseDto, LoginUserDto, type RegisterUserDto } from './domain/auth.entity';
+import { LoginResponseDto, type RegisterUserDto } from './domain/auth.dto';
 import { type UserEntity } from 'src/user/domain/user.entity';
 import { JwtService } from "@nestjs/jwt";
+import { LoginUserDto } from './domain/signin.dto';
 
 @Injectable()
 export class AuthService implements AuthRepository {
