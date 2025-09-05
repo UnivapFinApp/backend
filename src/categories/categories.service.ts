@@ -1,25 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto, UpdateCategoryDto } from './domain/category.dto';
+import { CategoryRepository } from './domain/category.repository';
+import { CategoryEntity } from './domain/entities/category.entity';
+import { PrismaService } from 'src/common/database/prisma/prisma.service';
+import { Prisma } from 'generated/prisma';
 
 @Injectable()
-export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+export class CategoriesService implements CategoryRepository {
+  constructor(private prisma: PrismaService) { }
+
+  async category(
+    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput
+  ): Promise<CategoryEntity | null> {
+    return this.prisma.category.findUnique({
+      where: categoryWhereUniqueInput,
+    });
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  categories(
+    categoryWhereInput: Prisma.CategoryWhereInput
+  ): Promise<CategoryEntity[]> {
+    return this.prisma.category.findMany({
+      where: categoryWhereInput
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  createCategory(
+    data: Prisma.CategoryCreateInput
+  ): Promise<CategoryEntity> {
+    return this.prisma.category.create({ data });
+  }
+  updateCategory(
+    categoryWhereInput: Prisma.CategoryWhereUniqueInput,
+    data: Prisma.CategoryUpdateInput
+  ): Promise<CategoryEntity> {
+    return this.prisma.category.update({
+      where: categoryWhereInput,
+      data
+    });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  deleteCategory(
+    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput
+  ): Promise<CategoryEntity> {
+    return this.prisma.category.update({
+      data: {
+        isActive: false
+      }, where: categoryWhereUniqueInput
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
-  }
 }
