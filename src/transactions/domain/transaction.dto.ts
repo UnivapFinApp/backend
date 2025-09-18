@@ -12,8 +12,6 @@ export class CreateTransactionDto {
     @ApiProperty()
     date: Date
     @ApiProperty()
-    userId: string;
-    @ApiProperty()
     categoryId: string;
     @ApiProperty()
     createdAt: Date;

@@ -6,6 +6,8 @@ export class CreateCategoryDto {
     name: string;
     @ApiProperty({})
     isActive: boolean;
+    @ApiProperty({})
+    userId: string;
 }
 
 @ApiSchema({ name: "UpdateCategoryModel" })

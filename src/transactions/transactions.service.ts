@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransactionDto } from './domain/transaction.dto';
 import { PrismaService } from 'src/common/database/prisma/prisma.service';
 import { TransactionRepository } from './domain/transactions.repository';
@@ -8,16 +8,24 @@ import { UpdateCategoryDto } from 'src/categories/domain/category.dto';
 
 @Injectable()
 export class TransactionsService implements TransactionRepository {
-  constructor(private readonly service: PrismaService) { }
+  constructor(
+    private readonly service: PrismaService
+  ) { }
 
   async createTransaction(
+    userId: string,
     data: CreateTransactionDto
   ): Promise<TransactionEntity> {
-    return await this.service.transaction.create({ data });
+    const category = await this.service.category.count({ where: { id: data.categoryId, isActive: true } });
+    if(category === 0) {
+      throw new NotFoundException('Category ID points to a non-existing category.');
+    }
+
+    return await this.service.transaction.create({ data: {...data, userId} });
   }
 
-  async transactions(transactionWhereUniqueInput: Prisma.TransactionWhereUniqueInput): Promise<TransactionEntity[]> {
-    return await this.service.transaction.findMany({ where: transactionWhereUniqueInput });
+  async transactions(transactionWhereInput: Prisma.TransactionWhereInput): Promise<TransactionEntity[]> {
+    return await this.service.transaction.findMany({ where: transactionWhereInput });
   }
 
   async transaction(transactionWhereInput: Prisma.TransactionWhereInput): Promise<TransactionEntity | null> {
@@ -28,6 +36,7 @@ export class TransactionsService implements TransactionRepository {
     return await this.service.transaction.update({ where: transactionWhereInput, data })
   }
 
-  removeTransaction(transactionWhereUniqueInput: Prisma.TransactionWhereUniqueInput) {
+  async removeTransaction(transactionWhereUniqueInput: Prisma.TransactionWhereUniqueInput): Promise<TransactionEntity> {
+    return await this.service.transaction.update({ data: { isActive: false }, where: transactionWhereUniqueInput })
   }
 }

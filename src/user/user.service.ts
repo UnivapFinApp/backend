@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/database/prisma/prisma.service';
 import { Prisma } from 'generated/prisma';
 import { UserRepository } from './domain/user.repository';
@@ -10,10 +10,13 @@ export class UserService implements UserRepository {
 
     async user(
         userWhereUniqueInput: Prisma.UserWhereUniqueInput
-    ): Promise<UserEntity | null> {
-        return this.prisma.user.findUnique({
+    ): Promise<UserEntity> {
+        const user = await this.prisma.user.findUnique({
             where: userWhereUniqueInput
         });
+
+        if (user == null || !user) throw new NotFoundException('User not found');
+        else return user!;
     }
     users(
         userWhereInput: Prisma.UserWhereInput
@@ -23,20 +26,35 @@ export class UserService implements UserRepository {
         });
     }
 
-    createUser(
+    async createUser(
         data: Prisma.UserCreateInput
     ): Promise<UserEntity> {
+        const haveUser = await this.prisma.user.count({ where: { email: data.email } });
+        if (!!haveUser) throw new ConflictException('User already exists'); 
+        
         return this.prisma.user.create({ data });
     }
 
-    updateUser(
+    async updateUser(
         where: Prisma.UserWhereUniqueInput,
         data: Prisma.UserUpdateInput
     ): Promise<UserEntity> {
+        const haveUser = await this.user({ id: where.id });
+
+        if (!haveUser) throw new NotFoundException('User not found');
+
         return this.prisma.user.update({ where, data });
     }
 
     deleteUser(where: any): Promise<UserEntity> {
+        const haveUser = this.user({ id: where.id });
+        if (!haveUser) throw new NotFoundException('User not found');
+
+
         return this.prisma.user.update({ data: { isActive: false }, where });
+    }
+
+    verifyUser(where: Prisma.UserWhereUniqueInput): Promise<number> {
+        return this.prisma.user.count({ where });
     }
 }

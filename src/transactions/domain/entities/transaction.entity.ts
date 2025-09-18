@@ -1,5 +1,4 @@
 import { TransactionType } from "generated/prisma";
-import { TransactionType as Type } from "../transaction-type.enum";
 import { Decimal } from "generated/prisma/runtime/library";
 
 export class TransactionEntity {
@@ -8,7 +7,6 @@ export class TransactionEntity {
     amount: Decimal;
     date: Date
 
-    userId: string;
     categoryId: string;
     createdAt: Date;
     updatedAt: Date;

@@ -2,6 +2,7 @@ import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post,
 import { UserService } from './user.service';
 import { type UpdateUserDto } from './domain/user.dto';
 import { UserEntity } from './domain/user.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**
  * Controlador utilizado para lidar com dados relacionados
@@ -13,6 +14,7 @@ import { UserEntity } from './domain/user.entity';
  */
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiBearerAuth("JWT")
 @Controller('user')
 export class UserController {
     constructor(
