@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto, UpdateCategoryDto } from './domain/category.dto';
 import { CategoryRepository } from './domain/category.repository';
 import { CategoryEntity } from './domain/entities/category.entity';
 import { PrismaService } from 'src/common/database/prisma/prisma.service';
 import { Prisma } from 'generated/prisma';
+import { CreateCategoryDto } from './domain/category.dto';
+import { UserService } from 'src/user/user.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class CategoriesService implements CategoryRepository {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+  ) { }
 
   async category(
     categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput
   ): Promise<CategoryEntity | null> {
     return this.prisma.category.findUnique({
-      where: categoryWhereUniqueInput,
+      where: categoryWhereUniqueInput, 
     });
   }
 
@@ -26,9 +30,11 @@ export class CategoriesService implements CategoryRepository {
   }
 
   createCategory(
-    data: Prisma.CategoryCreateInput
+    data: CreateCategoryDto
   ): Promise<CategoryEntity> {
-    return this.prisma.category.create({ data });
+    const user = this.prisma.user.count({ where: { id: data.userId } });
+    if (!user) throw new Error('User not found');
+    return this.prisma.category.create({ data: {...data, userId: data.userId} });
   }
   updateCategory(
     categoryWhereInput: Prisma.CategoryWhereUniqueInput,
