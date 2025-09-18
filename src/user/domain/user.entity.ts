@@ -12,6 +12,10 @@ export class UserEntity {
     createdAt: Date;
     updatedAt: Date;
 
+    @Exclude()
+    refreshToken: string | null;
+
+
     constructor(partial: Partial<UserEntity>) {
         Object.assign(this, partial);
     }
