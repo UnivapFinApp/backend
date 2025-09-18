@@ -1,4 +1,4 @@
-import { ApiProperty, ApiSchema } from "@nestjs/swagger"
+import { ApiProperty, ApiSchema, PartialType } from "@nestjs/swagger"
 import { z } from "zod";
 
 export const registerUserSchema = z
@@ -18,7 +18,10 @@ export class RegisterUserDto {
     password: string;
 }
 
+
 export class LoginResponseDto {
     @ApiProperty()
-    token: string;
+    access_token: string;
+    @ApiProperty()
+    refresh_token: string;
 }

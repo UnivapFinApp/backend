@@ -2,11 +2,12 @@ import { Body, Controller, Get, Post, Request, UseGuards, UsePipes } from '@nest
 import { UserEntity } from 'src/user/domain/user.entity';
 import { LoginResponseDto, RegisterUserDto, registerUserSchema } from './domain/auth.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
 import { Public } from 'src/utils/public.decorator';
-import { ApiBadRequestResponse, ApiBody, ApiInternalServerErrorResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'src/utils/zod.pipe';
 import { LoginUserDto } from './domain/signin.dto';
+import { JwtAuthGuard } from './auth.guard';
+
 
 @Controller()
 export class AuthController {
@@ -14,6 +15,11 @@ export class AuthController {
         private readonly service: AuthService
     ) { }
 
+    @ApiOkResponse({
+        description: 'Register a new user',
+        type: UserEntity,
+        isArray: true
+    })
     @Public()
     @UsePipes(new ZodValidationPipe(registerUserSchema))
     @Post('register')
@@ -31,17 +37,21 @@ export class AuthController {
         @Body()
         loginUser: LoginUserDto
     ): Promise<LoginResponseDto> {
-        return this.service.signIn(loginUser);
+        return this.service.login(loginUser);
     }
 
+    @Public()
+    @Post('refresh-token')
+    async refreshToken(@Body('refresh_token') refreshToken: string): Promise<{ access_token: string }> {
+        return this.service.refreshAccessToken(refreshToken);
+    } 
 
+    @ApiBearerAuth("JWT")
     @Get('profile')
-    @UseGuards(AuthGuard)
     profile(
         @Request() request
     ) {
-        const req = request.data;
+        const req = request.user;
         return { name: req.name, email: req.email }
     }
-
 }
