@@ -1,5 +1,7 @@
 # docker data directory
 data/
 
-# specific targets 
+# specific targets
 generated/
+node_modules/
+dist/
