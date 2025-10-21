@@ -7,16 +7,22 @@ import { AppController } from './app.controller';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import configuration from './config/configuration';
+import { HttpModule } from '@nestjs/axios';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
-  imports: [AuthModule, CommonModule, UserModule,
+  imports: [
+    AuthModule,
+    CommonModule,
+    UserModule,
     ConfigModule.forRoot({
-      load: [configuration]
+      load: [configuration],
     }),
     CategoriesModule,
-    TransactionsModule
+    TransactionsModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

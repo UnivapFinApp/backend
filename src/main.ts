@@ -8,7 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.setGlobalPrefix('v1/api');
 
-
   const config = new DocumentBuilder()
     .setTitle('Financer')
     .setDescription('Financer API endpoints description')
@@ -21,19 +20,24 @@ async function bootstrap() {
         name: 'JWT',
         description: 'Bearer token for authorization (/v1/api/api/login)',
         in: 'header',
-      }, "JWT" 
+      },
+      'JWT',
     )
     .addTag('user')
-    .build()
+    .build();
   const documentFactory = SwaggerModule.createDocument(app, config);
 
   app.use(cookieParser());
 
-  app.use('/docs', apiReference({
-    content: documentFactory,
-    theme: "kepler"
-  }))
+  app.use(
+    '/docs',
+    apiReference({
+      content: documentFactory,
+      theme: 'kepler',
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+void bootstrap();
