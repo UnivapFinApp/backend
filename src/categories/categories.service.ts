@@ -4,56 +4,61 @@ import { CategoryEntity } from './domain/entities/category.entity';
 import { PrismaService } from 'src/common/database/prisma/prisma.service';
 import { Prisma } from 'generated/prisma';
 import { CreateCategoryDto } from './domain/category.dto';
-import { UserService } from 'src/user/user.service';
-import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class CategoriesService implements CategoryRepository {
-  constructor(
-    private prisma: PrismaService,
-  ) { }
+  constructor(private prisma: PrismaService) {}
 
   async category(
-    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput
+    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput,
   ): Promise<CategoryEntity | null> {
     return this.prisma.category.findUnique({
-      where: categoryWhereUniqueInput, 
+      where: categoryWhereUniqueInput,
     });
   }
 
   categories(
-    categoryWhereInput: Prisma.CategoryWhereInput
+    categoryWhereInput: Prisma.CategoryWhereInput,
   ): Promise<CategoryEntity[]> {
     return this.prisma.category.findMany({
-      where: categoryWhereInput
+      where: categoryWhereInput,
     });
   }
 
-  createCategory(
-    data: CreateCategoryDto
-  ): Promise<CategoryEntity> {
+  createCategory(data: CreateCategoryDto): Promise<CategoryEntity> {
     const user = this.prisma.user.count({ where: { id: data.userId } });
     if (!user) throw new Error('User not found');
-    return this.prisma.category.create({ data: {...data, userId: data.userId} });
+
+    const alreadyExists = this.prisma.category.count({
+      where: { name: data.name },
+    });
+
+    if (!!alreadyExists) {
+      throw new Error('Duplicated category name.');
+    }
+
+    return this.prisma.category.create({
+      data: { ...data, userId: data.userId },
+    });
   }
   updateCategory(
     categoryWhereInput: Prisma.CategoryWhereUniqueInput,
-    data: Prisma.CategoryUpdateInput
+    data: Prisma.CategoryUpdateInput,
   ): Promise<CategoryEntity> {
     return this.prisma.category.update({
       where: categoryWhereInput,
-      data
+      data,
     });
   }
 
   deleteCategory(
-    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput
+    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput,
   ): Promise<CategoryEntity> {
     return this.prisma.category.update({
       data: {
-        isActive: false
-      }, where: categoryWhereUniqueInput
-    })
+        isActive: false,
+      },
+      where: categoryWhereUniqueInput,
+    });
   }
-
 }

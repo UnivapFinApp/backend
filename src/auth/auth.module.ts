@@ -11,10 +11,13 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  imports: [EncryptionModule, UserModule, ConfigModule,
+  imports: [
+    EncryptionModule,
+    UserModule,
+    ConfigModule,
     JwtModule.register({
       global: true,
-      secret: (new ConfigService).get<string>("JWT_SECRET"),
+      secret: new ConfigService().get<string>('JWT_SECRET'),
       signOptions: { expiresIn: '24h' },
     }),
     PassportModule.register({
@@ -23,9 +26,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       session: false,
     }),
   ],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, AuthService, 
-    JwtStrategy],
-  controllers: [AuthController]
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    AuthService,
+    JwtStrategy,
+  ],
+  controllers: [AuthController],
 })
-export class AuthModule {
-}
+export class AuthModule {}
