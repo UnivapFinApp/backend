@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CategoryRepository } from './domain/category.repository';
 import { CategoryEntity } from './domain/entities/category.entity';
 import { PrismaService } from 'src/common/database/prisma/prisma.service';
@@ -34,7 +34,7 @@ export class CategoriesService implements CategoryRepository {
     });
 
     if (!!alreadyExists) {
-      throw new Error('Duplicated category name.');
+      throw new HttpException('Duplicated category name.', HttpStatus.CONFLICT);
     }
 
     return this.prisma.category.create({
