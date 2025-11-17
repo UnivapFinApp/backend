@@ -7,7 +7,6 @@ import { AppController } from './app.controller';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import configuration from './config/configuration';
-import { HttpModule } from '@nestjs/axios';
 import { QueueModule } from './queue/queue.module';
 
 @Module({
