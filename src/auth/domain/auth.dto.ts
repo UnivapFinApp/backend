@@ -1,27 +1,36 @@
-import { ApiProperty, ApiSchema, PartialType } from "@nestjs/swagger"
-import { z } from "zod";
+import { ApiProperty, ApiSchema, PartialType } from '@nestjs/swagger';
+import { z } from 'zod';
 
 export const registerUserSchema = z
-    .object({
-        name: z.string().min(3, { error: "Name should have at least 3 characters" }),
-        email: z.email(),
-        password: z.string().min(6, { error: "Password should have at least 6 characters" }),
-    }).required();
+  .object({
+    name: z
+      .string()
+      .min(3, { error: 'Name should have at least 3 characters' }),
+    email: z.email(),
+    password: z
+      .string()
+      .min(6, { error: 'Password should have at least 6 characters' }),
+  })
+  .required();
 
-@ApiSchema({ name: "RegisterUserModel" })
+@ApiSchema({ name: 'RegisterUserModel' })
 export class RegisterUserDto {
-    @ApiProperty()
-    name: string;
-    @ApiProperty()
-    email: string;
-    @ApiProperty()
-    password: string;
+  @ApiProperty()
+  name: string;
+  @ApiProperty()
+  email: string;
+  @ApiProperty()
+  password: string;
 }
 
-
 export class LoginResponseDto {
-    @ApiProperty()
-    access_token: string;
-    @ApiProperty()
-    refresh_token: string;
+  @ApiProperty()
+  access_token: string;
+  @ApiProperty()
+  refresh_token: string;
+}
+
+export class LoginControllerResponseDto {
+  @ApiProperty()
+  access_token: string;
 }

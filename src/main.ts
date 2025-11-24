@@ -5,9 +5,8 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('v1/api');
-
 
   const config = new DocumentBuilder()
     .setTitle('Financer')
@@ -21,19 +20,29 @@ async function bootstrap() {
         name: 'JWT',
         description: 'Bearer token for authorization (/v1/api/api/login)',
         in: 'header',
-      }, "JWT" 
+      },
+      'JWT',
     )
     .addTag('user')
-    .build()
+    .build();
   const documentFactory = SwaggerModule.createDocument(app, config);
+
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  });
 
   app.use(cookieParser());
 
-  app.use('/docs', apiReference({
-    content: documentFactory,
-    theme: "kepler"
-  }))
+  app.use(
+    '/docs',
+    apiReference({
+      content: documentFactory,
+      theme: 'kepler',
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+void bootstrap();
