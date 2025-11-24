@@ -25,15 +25,15 @@ export class CategoriesService implements CategoryRepository {
     });
   }
 
-  createCategory(data: CreateCategoryDto): Promise<CategoryEntity> {
-    const user = this.prisma.user.count({ where: { id: data.userId } });
+  async createCategory(data: CreateCategoryDto): Promise<CategoryEntity> {
+    const user = await this.prisma.user.count({ where: { id: data.userId } });
     if (!user) throw new Error('User not found');
 
-    const alreadyExists = this.prisma.category.count({
-      where: { name: data.name },
+    const alreadyExists = await this.prisma.category.count({
+      where: { name: data.name, userId: data.userId },
     });
 
-    if (!!alreadyExists) {
+    if (alreadyExists) {
       throw new HttpException('Duplicated category name.', HttpStatus.CONFLICT);
     }
 
