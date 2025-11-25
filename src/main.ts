@@ -28,7 +28,7 @@ async function bootstrap() {
   const documentFactory = SwaggerModule.createDocument(app, config);
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost',
     credentials: true,
   });
 

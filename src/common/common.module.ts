@@ -4,6 +4,6 @@ import { EncryptionModule } from './encryption/encryption.module';
 
 @Module({
   imports: [DatabaseModule, EncryptionModule],
-  exports: [EncryptionModule]
+  exports: [EncryptionModule],
 })
-export class CommonModule { }
+export class CommonModule {}

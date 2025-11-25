@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/common/database/database.module';
   imports: [DatabaseModule],
   controllers: [TransactionsController],
   providers: [TransactionsService],
+  exports: [TransactionsService],
 })
-export class TransactionsModule { }
+export class TransactionsModule {}
