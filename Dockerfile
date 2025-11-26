@@ -1,27 +1,22 @@
-FROM node:24-alpine3.22 AS base
-WORKDIR /usr/app
-COPY package.json ./
-RUN npm i
-COPY run.sh ./
-
-FROM base AS builder
-WORKDIR /usr/app
+FROM node:18 as build
+WORKDIR /usr/src/app
+COPY package.json .
+COPY package-lock.json .
+RUN npm install
 COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-
-FROM node:24-alpine3.22 AS prod
-WORKDIR /usr/app
-COPY --from=builder /usr/app/dist ./dist
-COPY --from=builder /usr/app/node_modules ./node_modules
-COPY --from=builder /usr/app/generated ./generated
-
-COPY --from=builder /usr/app/prisma/schema.prisma ./
-COPY --from=builder /usr/app/prisma ./prisma
-COPY --from=builder /usr/app/run.sh ./
-RUN apk add curl
-
+FROM node:18-slim
+RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends
+WORKDIR /usr/src/app
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/package.json .
+COPY --chown=node:node --from=build /usr/src/app/package-lock.json .
+COPY --chown=node:node --from=build /usr/src/app/prisma/ ./prisma
+RUN npm install --omit=dev
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+RUN apt-get update && apt-get install curl -y
+ENV NODE_ENV production
 EXPOSE 3000
-
-CMD [ "sh", "-c", "./run.sh" ]
+CMD ["dumb-init", "npm", "run", "migrate:start:prod"]
